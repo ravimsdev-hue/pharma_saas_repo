@@ -1,0 +1,63 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null",
+      "$userId": {
+        ".write": "auth != null && (auth.uid === $userId || root.child('users').child(auth.uid).child('role').val() === 'Owner')"
+      }
+    },
+    "$env": {
+      "$ownerUid": {
+        "onlinePrescriptions": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid || auth.uid === $ownerUid)",
+          "$prescriptionId": {
+            ".write": true,
+            ".validate": "newData.hasChildren(['customerName', 'address', 'contactNumber', 'fileUrl'])"
+          }
+        },
+        "products": {
+          ".read": true,
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && (root.child('users').child(auth.uid).child('role').val() === 'Owner' || root.child('users').child(auth.uid).child('role').val() === 'Manager')"
+        },
+        "batches": {
+          ".read": true,
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && (root.child('users').child(auth.uid).child('role').val() === 'Owner' || root.child('users').child(auth.uid).child('role').val() === 'Manager')"
+        },
+        "settings": {
+          ".read": true,
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && root.child('users').child(auth.uid).child('role').val() === 'Owner'"
+        },
+        "grns": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && root.child('users').child(auth.uid).child('role').val() !== 'Cashier'",
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && root.child('users').child(auth.uid).child('role').val() !== 'Cashier'"
+        },
+        "suppliers": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && root.child('users').child(auth.uid).child('role').val() !== 'Cashier'",
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && root.child('users').child(auth.uid).child('role').val() !== 'Cashier'"
+        },
+        "permissions": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)",
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid) && root.child('users').child(auth.uid).child('role').val() === 'Owner'"
+        },
+        "sales": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)",
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)"
+        },
+        "creditCustomers": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)",
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)"
+        },
+        "creditLedger": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)",
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)"
+        },
+        "returns": {
+          ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)",
+          ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid)"
+        },
+        ".read": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid || auth.uid === $ownerUid)",
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('ownerUid').val() === $ownerUid || auth.uid === $ownerUid)"
+      }
+    }
+  }
+}

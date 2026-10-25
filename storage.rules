@@ -1,0 +1,51 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // =========================================================================
+    // METRO PHARMACY SAAS - FIREBASE STORAGE SECURITY RULES
+    // =========================================================================
+
+    // 1. Customer Online Prescription Uploads
+    // Public unauthenticated customer uploads from storefront
+    match /prescriptions/{fileName} {
+      allow read: if true;
+      allow write: if request.resource.size <= 10 * 1024 * 1024
+                   && (request.resource.contentType.matches('image/.*')
+                       || request.resource.contentType == 'application/pdf');
+    }
+
+    // Tenant-scoped prescriptions: /{env}/{ownerUid}/prescriptions/{fileName}
+    match /{env}/{ownerUid}/prescriptions/{fileName} {
+      allow read: if true;
+      allow write: if request.resource.size <= 10 * 1024 * 1024
+                   && (request.resource.contentType.matches('image/.*')
+                       || request.resource.contentType == 'application/pdf');
+    }
+
+    // 2. Goods Received Notes (GRN) Scanned Invoices
+    // Restricted to authenticated staff
+    match /{env}/{ownerUid}/grn_invoices/{fileName} {
+      allow read, write: if request.auth != null;
+    }
+    match /grn_invoices/{fileName} {
+      allow read, write: if request.auth != null;
+    }
+
+    // 3. Store Branding & Logos
+    match /{env}/{ownerUid}/branding/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /branding/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 4. Default Fallback
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
